@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="85" failures="0" errors="0" time="3.24">
+  <testsuite name="authenticate" errors="0" failures="0" skipped="0" timestamp="2026-09-27T22:18:16" time="0.958" tests="19">
+    <testcase classname="authenticate responde 401 sin cabecera" name="authenticate responde 401 sin cabecera" time="0.007">
+    </testcase>
+    <testcase classname="authenticate responde 401 esquema distinto de Bearer" name="authenticate responde 401 esquema distinto de Bearer" time="0.001">
+    </testcase>
+    <testcase classname="authenticate responde 401 Bearer sin token" name="authenticate responde 401 Bearer sin token" time="0.001">
+    </testcase>
+    <testcase classname="authenticate responde 401 con token inválido" name="authenticate responde 401 con token inválido" time="0.001">
+    </testcase>
+    <testcase classname="authenticate deja pasar y guarda el usuario con token válido" name="authenticate deja pasar y guarda el usuario con token válido" time="0.001">
+    </testcase>
+    <testcase classname="authorize responde 401 si no hay usuario autenticado" name="authorize responde 401 si no hay usuario autenticado" time="0.001">
+    </testcase>
+    <testcase classname="authorize responde 403 si el rol no está permitido" name="authorize responde 403 si el rol no está permitido" time="0.001">
+    </testcase>
+    <testcase classname="authorize deja pasar si el rol está permitido" name="authorize deja pasar si el rol está permitido" time="0">
+    </testcase>
+    <testcase classname="validate guarda los datos validados en req.valid" name="validate guarda los datos validados en req.valid" time="0.002">
+    </testcase>
+    <testcase classname="validate devuelve 400 con el detalle de cada campo" name="validate devuelve 400 con el detalle de cada campo" time="0.001">
+    </testcase>
+    <testcase classname="validate usa el nombre de la fuente cuando el error no es de un campo concreto" name="validate usa el nombre de la fuente cuando el error no es de un campo concreto" time="0">
+    </testcase>
+    <testcase classname="validate trata un cuerpo ausente como objeto vacío" name="validate trata un cuerpo ausente como objeto vacío" time="0.001">
+    </testcase>
+    <testcase classname="errorHandler notFound genera un 404" name="errorHandler notFound genera un 404" time="0.001">
+    </testcase>
+    <testcase classname="errorHandler responde con el estado y mensaje de AppError" name="errorHandler responde con el estado y mensaje de AppError" time="0">
+    </testcase>
+    <testcase classname="errorHandler incluye los detalles de validación" name="errorHandler incluye los detalles de validación" time="0">
+    </testcase>
+    <testcase classname="errorHandler traduce errores conocidos ({ type: &apos;entity.parse.failed&apos; } → 400)" name="errorHandler traduce errores conocidos ({ type: &apos;entity.parse.failed&apos; } → 400)" time="0.001">
+    </testcase>
+    <testcase classname="errorHandler traduce errores conocidos ({ type: &apos;entity.too.large&apos; } → 413)" name="errorHandler traduce errores conocidos ({ type: &apos;entity.too.large&apos; } → 413)" time="0">
+    </testcase>
+    <testcase classname="errorHandler traduce errores conocidos ({ code: &apos;23505&apos; } → 409)" name="errorHandler traduce errores conocidos ({ code: &apos;23505&apos; } → 409)" time="0.001">
+    </testcase>
+    <testcase classname="errorHandler oculta el detalle de errores inesperados" name="errorHandler oculta el detalle de errores inesperados" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="authService.register" errors="0" failures="0" skipped="0" timestamp="2026-09-27T22:18:16" time="1.859" tests="12">
+    <testcase classname="authService.register crea al donante con rol &quot;usuario&quot;, correo en minúsculas y contraseña hasheada" name="authService.register crea al donante con rol &quot;usuario&quot;, correo en minúsculas y contraseña hasheada" time="0.052">
+    </testcase>
+    <testcase classname="authService.register rechaza un correo ya registrado con 409" name="authService.register rechaza un correo ya registrado con 409" time="0.006">
+    </testcase>
+    <testcase classname="authService.register permite crear un administrador solo desde el código interno" name="authService.register permite crear un administrador solo desde el código interno" time="0.005">
+    </testcase>
+    <testcase classname="authService.login devuelve un JWT válido con el rol del usuario" name="authService.login devuelve un JWT válido con el rol del usuario" time="0.012">
+    </testcase>
+    <testcase classname="authService.login rechaza contraseña incorrecta con 401" name="authService.login rechaza contraseña incorrecta con 401" time="0.007">
+    </testcase>
+    <testcase classname="authService.login rechaza correo inexistente con el mismo mensaje genérico" name="authService.login rechaza correo inexistente con el mismo mensaje genérico" time="0.004">
+    </testcase>
+    <testcase classname="authService.login rechaza cuentas desactivadas con 403" name="authService.login rechaza cuentas desactivadas con 403" time="0.012">
+    </testcase>
+    <testcase classname="authService.verifyToken acepta un token emitido por el servicio" name="authService.verifyToken acepta un token emitido por el servicio" time="0.004">
+    </testcase>
+    <testcase classname="authService.verifyToken rechaza tokens firmados con otro secreto" name="authService.verifyToken rechaza tokens firmados con otro secreto" time="0.04">
+    </testcase>
+    <testcase classname="authService.verifyToken rechaza tokens con otra audiencia" name="authService.verifyToken rechaza tokens con otra audiencia" time="0.006">
+    </testcase>
+    <testcase classname="authService.ensureAdmin no hace nada si faltan correo o contraseña" name="authService.ensureAdmin no hace nada si faltan correo o contraseña" time="0.002">
+    </testcase>
+    <testcase classname="authService.ensureAdmin crea el administrador una sola vez" name="authService.ensureAdmin crea el administrador una sola vez" time="0.006">
+    </testcase>
+  </testsuite>
+  <testsuite name="Endpoints generales" errors="0" failures="0" skipped="0" timestamp="2026-09-27T22:18:16" time="2.444" tests="15">
+    <testcase classname="Endpoints generales GET /health" name="Endpoints generales GET /health" time="0.189">
+    </testcase>
+    <testcase classname="Endpoints generales GET /api-docs/openapi.json publica la especificación" name="Endpoints generales GET /api-docs/openapi.json publica la especificación" time="0.036">
+    </testcase>
+    <testcase classname="Endpoints generales ruta inexistente → 404" name="Endpoints generales ruta inexistente → 404" time="0.025">
+    </testcase>
+    <testcase classname="Endpoints generales JSON mal formado → 400" name="Endpoints generales JSON mal formado → 400" time="0.03">
+    </testcase>
+    <testcase classname="Endpoints generales cuerpo mayor a 10 kb → 413" name="Endpoints generales cuerpo mayor a 10 kb → 413" time="0.015">
+    </testcase>
+    <testcase classname="POST /api/auth/register registra un donante y nunca devuelve la contraseña" name="POST /api/auth/register registra un donante y nunca devuelve la contraseña" time="0.084">
+    </testcase>
+    <testcase classname="POST /api/auth/register los campos opcionales pueden omitirse" name="POST /api/auth/register los campos opcionales pueden omitirse" time="0.066">
+    </testcase>
+    <testcase classname="POST /api/auth/register correo duplicado (sin importar mayúsculas) → 409" name="POST /api/auth/register correo duplicado (sin importar mayúsculas) → 409" time="0.042">
+    </testcase>
+    <testcase classname="POST /api/auth/register datos inválidos → 400 con detalle por campo" name="POST /api/auth/register datos inválidos → 400 con detalle por campo" time="0.016">
+    </testcase>
+    <testcase classname="POST /api/auth/register no permite auto-asignarse el rol admin" name="POST /api/auth/register no permite auto-asignarse el rol admin" time="0.011">
+    </testcase>
+    <testcase classname="POST /api/auth/login y GET /api/auth/me login correcto devuelve token Bearer" name="POST /api/auth/login y GET /api/auth/me login correcto devuelve token Bearer" time="0.047">
+    </testcase>
+    <testcase classname="POST /api/auth/login y GET /api/auth/me contraseña incorrecta → 401" name="POST /api/auth/login y GET /api/auth/me contraseña incorrecta → 401" time="0.033">
+    </testcase>
+    <testcase classname="POST /api/auth/login y GET /api/auth/me GET /me con token devuelve el perfil" name="POST /api/auth/login y GET /api/auth/me GET /me con token devuelve el perfil" time="0.063">
+    </testcase>
+    <testcase classname="POST /api/auth/login y GET /api/auth/me GET /me sin token → 401" name="POST /api/auth/login y GET /api/auth/me GET /me sin token → 401" time="0.047">
+    </testcase>
+    <testcase classname="POST /api/auth/login y GET /api/auth/me GET /me con token de un usuario que ya no existe → 404" name="POST /api/auth/login y GET /api/auth/me GET /me con token de un usuario que ya no existe → 404" time="0.023">
+    </testcase>
+  </testsuite>
+  <testsuite name="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP)" errors="0" failures="0" skipped="0" timestamp="2026-09-27T22:18:19" time="0.357" tests="7">
+    <testcase classname="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) no revela la tecnología del servidor (X-Powered-By)" name="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) no revela la tecnología del servidor (X-Powered-By)" time="0.001">
+    </testcase>
+    <testcase classname="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) envía X-Content-Type-Options: nosniff" name="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) envía X-Content-Type-Options: nosniff" time="0">
+    </testcase>
+    <testcase classname="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) envía una Content-Security-Policy restrictiva" name="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) envía una Content-Security-Policy restrictiva" time="0.001">
+    </testcase>
+    <testcase classname="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) impide guardar respuestas en caché" name="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) impide guardar respuestas en caché" time="0">
+    </testcase>
+    <testcase classname="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) envía Strict-Transport-Security" name="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) envía Strict-Transport-Security" time="0">
+    </testcase>
+    <testcase classname="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) CORS solo permite los orígenes configurados" name="Cabeceras de seguridad (corrección de hallazgos de OWASP ZAP) CORS solo permite los orígenes configurados" time="0.016">
+    </testcase>
+    <testcase classname="Límite de intentos (fuerza bruta) bloquea con 429 después de superar el límite de intentos de login" name="Límite de intentos (fuerza bruta) bloquea con 429 después de superar el límite de intentos de login" time="0.085">
+    </testcase>
+  </testsuite>
+  <testsuite name="Inyección SQL" errors="0" failures="0" skipped="0" timestamp="2026-09-27T22:18:18" time="0.944" tests="12">
+    <testcase classname="Inyección SQL el correo &quot;&apos; OR &apos;1&apos;=&apos;1&quot; se rechaza en la validación" name="Inyección SQL el correo &quot;&apos; OR &apos;1&apos;=&apos;1&quot; se rechaza en la validación" time="0.29">
+    </testcase>
+    <testcase classname="Inyección SQL el correo &quot;admin@alimenta.mx&apos;--&quot; se rechaza en la validación" name="Inyección SQL el correo &quot;admin@alimenta.mx&apos;--&quot; se rechaza en la validación" time="0.031">
+    </testcase>
+    <testcase classname="Inyección SQL el correo &quot;x@y.mx&apos;; DROP TABLE users;--&quot; se rechaza en la validación" name="Inyección SQL el correo &quot;x@y.mx&apos;; DROP TABLE users;--&quot; se rechaza en la validación" time="0.03">
+    </testcase>
+    <testcase classname="Inyección SQL una contraseña con SQL no permite entrar (consulta parametrizada)" name="Inyección SQL una contraseña con SQL no permite entrar (consulta parametrizada)" time="0.037">
+    </testcase>
+    <testcase classname="Inyección SQL un nombre con SQL se rechaza y la tabla sigue intacta" name="Inyección SQL un nombre con SQL se rechaza y la tabla sigue intacta" time="0.029">
+    </testcase>
+    <testcase classname="XSS (Cross-Site Scripting) nombre con código HTML/JS → 400" name="XSS (Cross-Site Scripting) nombre con código HTML/JS → 400" time="0.023">
+    </testcase>
+    <testcase classname="XSS (Cross-Site Scripting) organizacion con código HTML/JS → 400" name="XSS (Cross-Site Scripting) organizacion con código HTML/JS → 400" time="0.029">
+    </testcase>
+    <testcase classname="XSS (Cross-Site Scripting) ciudad con código HTML/JS → 400" name="XSS (Cross-Site Scripting) ciudad con código HTML/JS → 400" time="0.025">
+    </testcase>
+    <testcase classname="XSS (Cross-Site Scripting) las respuestas se envían como JSON, no como HTML" name="XSS (Cross-Site Scripting) las respuestas se envían como JSON, no como HTML" time="0.025">
+    </testcase>
+    <testcase classname="Manipulación de JWT token con firma alterada → 401" name="Manipulación de JWT token con firma alterada → 401" time="0.05">
+    </testcase>
+    <testcase classname="Manipulación de JWT token sin firma (alg: none) → 401" name="Manipulación de JWT token sin firma (alg: none) → 401" time="0.04">
+    </testcase>
+    <testcase classname="Manipulación de JWT token expirado → 401" name="Manipulación de JWT token expirado → 401" time="0.023">
+    </testcase>
+  </testsuite>
+  <testsuite name="loadConfig" errors="0" failures="0" skipped="0" timestamp="2026-09-27T22:18:19" time="0.068" tests="4">
+    <testcase classname="loadConfig falla si no se define JWT_SECRET (no hay secreto por defecto en el código)" name="loadConfig falla si no se define JWT_SECRET (no hay secreto por defecto en el código)" time="0.011">
+    </testcase>
+    <testcase classname="loadConfig falla si JWT_SECRET tiene menos de 32 caracteres" name="loadConfig falla si JWT_SECRET tiene menos de 32 caracteres" time="0.001">
+    </testcase>
+    <testcase classname="loadConfig usa valores por defecto seguros para lo demás" name="loadConfig usa valores por defecto seguros para lo demás" time="0">
+    </testcase>
+    <testcase classname="loadConfig toma los valores de las variables de entorno" name="loadConfig toma los valores de las variables de entorno" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Control de acceso por rol" errors="0" failures="0" skipped="0" timestamp="2026-09-27T22:18:17" time="2.05" tests="16">
+    <testcase classname="Control de acceso por rol sin token → 401" name="Control de acceso por rol sin token → 401" time="0.344">
+    </testcase>
+    <testcase classname="Control de acceso por rol rol usuario (donante) → 403" name="Control de acceso por rol rol usuario (donante) → 403" time="0.1">
+    </testcase>
+    <testcase classname="Control de acceso por rol rol admin → 200" name="Control de acceso por rol rol admin → 200" time="0.086">
+    </testcase>
+    <testcase classname="GET /api/users respeta limit y offset" name="GET /api/users respeta limit y offset" time="0.102">
+    </testcase>
+    <testcase classname="GET /api/users limit fuera de rango → 400" name="GET /api/users limit fuera de rango → 400" time="0.093">
+    </testcase>
+    <testcase classname="GET /api/users/:id devuelve el usuario sin hash de contraseña" name="GET /api/users/:id devuelve el usuario sin hash de contraseña" time="0.091">
+    </testcase>
+    <testcase classname="GET /api/users/:id id inexistente → 404" name="GET /api/users/:id id inexistente → 404" time="0.086">
+    </testcase>
+    <testcase classname="GET /api/users/:id id fuera del rango de PostgreSQL → 400 y no 500 (hallazgo de OWASP ZAP)" name="GET /api/users/:id id fuera del rango de PostgreSQL → 400 y no 500 (hallazgo de OWASP ZAP)" time="0.056">
+    </testcase>
+    <testcase classname="GET /api/users/:id id no numérico → 400" name="GET /api/users/:id id no numérico → 400" time="0.055">
+    </testcase>
+    <testcase classname="PATCH /api/users/:id/rol el admin puede promover a un donante" name="PATCH /api/users/:id/rol el admin puede promover a un donante" time="0.083">
+    </testcase>
+    <testcase classname="PATCH /api/users/:id/rol rol inválido → 400" name="PATCH /api/users/:id/rol rol inválido → 400" time="0.067">
+    </testcase>
+    <testcase classname="PATCH /api/users/:id/rol el admin no puede cambiar su propio rol" name="PATCH /api/users/:id/rol el admin no puede cambiar su propio rol" time="0.037">
+    </testcase>
+    <testcase classname="PATCH /api/users/:id/rol usuario inexistente → 404" name="PATCH /api/users/:id/rol usuario inexistente → 404" time="0.03">
+    </testcase>
+    <testcase classname="PATCH /api/users/:id/estado desactivar una cuenta impide su inicio de sesión" name="PATCH /api/users/:id/estado desactivar una cuenta impide su inicio de sesión" time="0.034">
+    </testcase>
+    <testcase classname="PATCH /api/users/:id/estado el admin no puede desactivarse a sí mismo" name="PATCH /api/users/:id/estado el admin no puede desactivarse a sí mismo" time="0.028">
+    </testcase>
+    <testcase classname="PATCH /api/users/:id/estado usuario inexistente → 404" name="PATCH /api/users/:id/estado usuario inexistente → 404" time="0.028">
+    </testcase>
+  </testsuite>
+</testsuites>

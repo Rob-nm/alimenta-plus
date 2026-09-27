@@ -1,0 +1,131 @@
+{
+  "total": 2,
+  "p": 1,
+  "ps": 500,
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 500,
+    "total": 2
+  },
+  "effortTotal": 10,
+  "issues": [
+    {
+      "key": "efacf218-eebb-4183-8e95-22256928f4eb",
+      "rule": "javascript:S7721",
+      "severity": "MAJOR",
+      "component": "alimenta-plus-auth:services/auth-service/src/routes/users.routes.js",
+      "project": "alimenta-plus-auth",
+      "line": 15,
+      "hash": "d82cc86f7afa1abf90e12d2e5df1d113",
+      "textRange": {
+        "startLine": 15,
+        "endLine": 15,
+        "startOffset": 2,
+        "endOffset": 24
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Move function 'assertNotSelf' to the outer scope.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "gunnmr99@gmail.com",
+      "tags": [
+        "performance",
+        "optimization",
+        "editable-source",
+        "javascript"
+      ],
+      "creationDate": "2026-09-27T21:39:53+0000",
+      "updateDate": "2026-09-27T22:04:06+0000",
+      "type": "CODE_SMELL",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "MAINTAINABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    },
+    {
+      "key": "50c11dfb-5296-4e99-ac96-26615c0da699",
+      "rule": "javascript:S1481",
+      "severity": "MINOR",
+      "component": "alimenta-plus-auth:services/auth-service/src/services/authService.js",
+      "project": "alimenta-plus-auth",
+      "line": 52,
+      "hash": "29ff91a3f04f0454df2a4c73668955e2",
+      "textRange": {
+        "startLine": 52,
+        "endLine": 52,
+        "startOffset": 27,
+        "endOffset": 32
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Remove the declaration of the unused '_omit' variable.",
+      "effort": "5min",
+      "debt": "5min",
+      "author": "gunnmr99@gmail.com",
+      "tags": [
+        "editable-source",
+        "unused"
+      ],
+      "creationDate": "2026-09-27T21:39:53+0000",
+      "updateDate": "2026-09-27T22:04:06+0000",
+      "type": "CODE_SMELL",
+      "scope": "MAIN",
+      "quickFixAvailable": false,
+      "messageFormattings": [],
+      "codeVariants": [],
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "MAINTAINABILITY",
+          "severity": "LOW"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "prioritizedRule": false,
+      "fromSonarQubeUpdate": false,
+      "internalTags": [],
+      "linkedTicketStatus": "NOT_LINKED"
+    }
+  ],
+  "components": [
+    {
+      "key": "alimenta-plus-auth:services/auth-service/src/routes/users.routes.js",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "users.routes.js",
+      "longName": "services/auth-service/src/routes/users.routes.js",
+      "path": "services/auth-service/src/routes/users.routes.js"
+    },
+    {
+      "key": "alimenta-plus-auth",
+      "enabled": true,
+      "qualifier": "TRK",
+      "name": "Alimenta+ Auth Service",
+      "longName": "Alimenta+ Auth Service"
+    },
+    {
+      "key": "alimenta-plus-auth:services/auth-service/src/services/authService.js",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "authService.js",
+      "longName": "services/auth-service/src/services/authService.js",
+      "path": "services/auth-service/src/services/authService.js"
+    }
+  ],
+  "facets": []
+}
