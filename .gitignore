@@ -1,0 +1,7 @@
+node_modules/
+services/*/coverage/
+services/*/reports/
+.scannerwork/
+.env
+*.log
+.DS_Store
