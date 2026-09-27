@@ -7,16 +7,17 @@ const { idParamSchema, listQuerySchema, roleSchema, statusSchema } = require('..
 const { ROLES } = require('../services/authService');
 const { AppError } = require('../errors');
 
+/** Evita que un administrador se quite permisos o se desactive a sí mismo. */
+function assertNotSelf(req) {
+  if (String(req.valid.params.id) === req.user.sub) {
+    throw new AppError(400, 'No puedes modificar tu propia cuenta de administrador');
+  }
+}
+
 /** Gestión de usuarios: solo administradores. */
 function userRoutes({ authService, userRepository }) {
   const router = express.Router();
   router.use(authenticate(authService), authorize(ROLES.ADMIN));
-
-  function assertNotSelf(req) {
-    if (String(req.valid.params.id) === req.user.sub) {
-      throw new AppError(400, 'No puedes modificar tu propia cuenta de administrador');
-    }
-  }
 
   router.get('/', validate(listQuerySchema, 'query'), async (req, res) => {
     const usuarios = await userRepository.list(req.valid.query);

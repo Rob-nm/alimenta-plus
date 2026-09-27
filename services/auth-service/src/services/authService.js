@@ -49,7 +49,8 @@ function createAuthService({ userRepository, config }) {
     if (!user.activo) {
       throw new AppError(403, 'La cuenta está desactivada');
     }
-    const { password_hash: _omit, ...usuario } = user;
+    const usuario = { ...user };
+    delete usuario.password_hash;
     return { token: signToken(user), usuario };
   }
 
