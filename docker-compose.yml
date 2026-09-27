@@ -1,0 +1,32 @@
+# Entorno de prueba (staging) de Alimenta+: auth-service + PostgreSQL.
+# Uso local:  JWT_SECRET=$(openssl rand -hex 32) docker compose up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: alimenta
+      POSTGRES_USER: alimenta
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-alimenta_staging}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alimenta -d alimenta"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  auth-service:
+    image: ${AUTH_IMAGE:-alimenta/auth-service:local}
+    build: ./services/auth-service
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://alimenta:${DB_PASSWORD:-alimenta_staging}@db:5432/alimenta
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET}
+      JWT_EXPIRES_IN: 1h
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@alimenta.mx}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Define ADMIN_PASSWORD}
+    ports:
+      - "3000:3000"

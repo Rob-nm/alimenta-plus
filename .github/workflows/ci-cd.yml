@@ -1,0 +1,251 @@
+name: CI/CD Alimenta+
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SERVICE_DIR: services/auth-service
+  SONAR_PROJECT: alimenta-plus-auth
+
+jobs:
+  # ───────────────────────────── 1. Integración continua ─────────────────────────────
+  test:
+    name: 1 · Lint y pruebas unitarias (Jest ≥ 80 %)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/auth-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Pruebas unitarias y de integración con cobertura
+        run: npm run test:ci
+
+      - name: Resumen de cobertura
+        if: always()
+        run: |
+          node -e '
+            const t = require("./coverage/coverage-summary.json").total;
+            const row = (n, m) => `| ${n} | ${m.covered}/${m.total} | ${m.pct} % |`;
+            console.log(["## Cobertura de pruebas (umbral 80 %)", "", "| Métrica | Cubierto | % |", "|---|---|---|",
+              row("Sentencias", t.statements), row("Ramas", t.branches), row("Funciones", t.functions), row("Líneas", t.lines)].join("\n"));
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publicar reportes de pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas-unitarias
+          path: |
+            services/auth-service/coverage/
+            services/auth-service/reports/
+
+  # ───────────────────────────── 2. Calidad de código ─────────────────────────────
+  sonarqube:
+    name: 2 · Análisis de calidad (SonarQube)
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      SONAR_HOST_URL: http://localhost:9000
+      SONAR_ADMIN_PASSWORD: Alimenta.Sonar.2026!
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Descargar reporte de cobertura
+        uses: actions/download-artifact@v4
+        with:
+          name: reporte-pruebas-unitarias
+          path: services/auth-service
+
+      - name: Ajustar rutas del lcov a la raíz del repositorio
+        run: sed -i 's#^SF:src/#SF:services/auth-service/src/#' services/auth-service/coverage/lcov.info
+
+      - name: Levantar servidor SonarQube (Community)
+        run: |
+          docker run -d --name sonarqube -p 9000:9000 -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:community
+          for i in $(seq 1 90); do
+            status=$(curl -s "$SONAR_HOST_URL/api/system/status" | jq -r .status 2>/dev/null || true)
+            echo "SonarQube: ${status:-iniciando}"
+            [ "$status" = "UP" ] && break
+            sleep 5
+          done
+          [ "$status" = "UP" ]
+
+      - name: Configurar usuario, token y proyecto
+        run: |
+          curl -sf -u admin:admin -X POST "$SONAR_HOST_URL/api/users/change_password" \
+            -d login=admin -d previousPassword=admin -d password="$SONAR_ADMIN_PASSWORD"
+          AUTH="admin:$SONAR_ADMIN_PASSWORD"
+          curl -sf -u "$AUTH" -X POST "$SONAR_HOST_URL/api/projects/create" \
+            -d project="$SONAR_PROJECT" -d name="Alimenta+ Auth Service" -d visibility=public > /dev/null
+          TOKEN=$(curl -sf -u "$AUTH" -X POST "$SONAR_HOST_URL/api/user_tokens/generate" -d name=ci | jq -r .token)
+          echo "::add-mask::$TOKEN"
+          echo "SONAR_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      - name: Análisis con SonarScanner
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+
+      - name: Esperar procesamiento del análisis
+        run: |
+          TASK=$(grep ceTaskId .scannerwork/report-task.txt | cut -d= -f2)
+          for i in $(seq 1 60); do
+            st=$(curl -s -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/ce/task?id=$TASK" | jq -r .task.status)
+            echo "Tarea $TASK: $st"
+            case "$st" in SUCCESS) break ;; FAILED|CANCELED) exit 1 ;; esac
+            sleep 3
+          done
+
+      - name: Exportar métricas (deuda técnica, code smells, etc.)
+        run: |
+          mkdir -p sonar-report
+          node scripts/sonar-report.js "$SONAR_HOST_URL" "admin:$SONAR_ADMIN_PASSWORD" "$SONAR_PROJECT" sonar-report >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Capturas del tablero de SonarQube
+        continue-on-error: true
+        run: |
+          npm i --no-save --prefix /tmp/pw playwright@1.49.1
+          /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
+          NODE_PATH=/tmp/pw/node_modules node scripts/sonar-screenshots.js "$SONAR_HOST_URL" admin "$SONAR_ADMIN_PASSWORD" "$SONAR_PROJECT" sonar-report
+
+      - name: Publicar reporte SonarQube
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-sonarqube
+          path: sonar-report/
+
+      - name: Quality Gate
+        run: |
+          status=$(jq -r .projectStatus.status sonar-report/sonar-quality-gate.json)
+          echo "Quality Gate: $status"
+          [ "$status" = "OK" ]
+
+  # ───────────────────────────── 3. Construcción ─────────────────────────────
+  build:
+    name: 3 · Construcción y publicación de imagen Docker
+    needs: [test, sonarqube]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Nombre de la imagen
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/auth-service" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login en GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir (y publicar en main)
+        uses: docker/build-push-action@v6
+        with:
+          context: services/auth-service
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:staging
+
+  # ───────────────────────────── 4. Entrega continua ─────────────────────────────
+  deploy-staging:
+    name: 4 · Despliegue en entorno de prueba + OWASP ZAP
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      ADMIN_EMAIL: admin@alimenta.mx
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar variables del entorno de prueba
+        run: |
+          echo "AUTH_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/auth-service:${GITHUB_SHA}" >> "$GITHUB_ENV"
+          JWT=$(openssl rand -hex 32); ADMINPW="Adm$(openssl rand -hex 8)9"
+          echo "::add-mask::$JWT"; echo "::add-mask::$ADMINPW"
+          echo "JWT_SECRET=$JWT" >> "$GITHUB_ENV"
+          echo "ADMIN_PASSWORD=$ADMINPW" >> "$GITHUB_ENV"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Desplegar imagen publicada (docker compose)
+        run: |
+          docker compose pull auth-service
+          docker compose up -d --no-build
+          for i in $(seq 1 40); do
+            curl -sf http://localhost:3000/health && break
+            sleep 3
+          done
+          curl -sf http://localhost:3000/health
+
+      - name: Pruebas de humo
+        run: ./scripts/smoke-test.sh http://localhost:3000
+
+      - name: Escaneo OWASP ZAP (API scan autenticado)
+        run: |
+          mkdir -p zap && chmod 777 zap
+          TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login -H 'Content-Type: application/json' \
+            -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}" | jq -r .token)
+          echo "::add-mask::$TOKEN"
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk:rw" \
+            -e ZAP_AUTH_HEADER=Authorization -e ZAP_AUTH_HEADER_VALUE="Bearer $TOKEN" \
+            ghcr.io/zaproxy/zaproxy:stable zap-api-scan.py \
+            -t http://localhost:3000/api-docs/openapi.json -f openapi \
+            -r zap-report.html -J zap-report.json -w zap-report.md -I
+
+      - name: Resumen del escaneo de seguridad
+        if: always()
+        run: node scripts/zap-summary.js zap/zap-report.json | tee zap/zap-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Logs del servicio
+        if: always()
+        run: docker compose logs auth-service > zap/auth-service.log 2>&1 || true
+
+      - name: Publicar reporte OWASP ZAP
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-owasp-zap
+          path: zap/
+
+      - name: Bloquear si hay vulnerabilidades de riesgo alto
+        run: node scripts/zap-summary.js zap/zap-report.json --fail-on-high > /dev/null
+
+      - name: Apagar entorno
+        if: always()
+        run: docker compose down -v
