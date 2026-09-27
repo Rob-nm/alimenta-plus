@@ -8,6 +8,7 @@ const { createAuthService } = require('./services/authService');
 const { authRoutes } = require('./routes/auth.routes');
 const { userRoutes } = require('./routes/users.routes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
+const { securityHeaders, authRateLimiter } = require('./middleware/security');
 
 function createApp({ db, config }) {
   const userRepository = createUserRepository(db);
@@ -15,6 +16,8 @@ function createApp({ db, config }) {
   const deps = { authService, userRepository, config };
 
   const app = express();
+  app.disable('x-powered-by');
+  app.use(securityHeaders());
   app.use(cors({ origin: config.corsOrigin }));
   app.use(express.json({ limit: '10kb' }));
 
@@ -23,6 +26,8 @@ function createApp({ db, config }) {
     res.sendFile(path.join(__dirname, 'docs', 'openapi.json')),
   );
 
+  const limiter = authRateLimiter(config.loginRateLimit);
+  app.use(['/api/auth/login', '/api/auth/register'], limiter);
   app.use('/api/auth', authRoutes(deps));
   app.use('/api/users', userRoutes(deps));
 

@@ -66,6 +66,11 @@ describe('GET /api/users/:id', () => {
     expect(res.status).toBe(404);
   });
 
+  test('id fuera del rango de PostgreSQL → 400 y no 500 (hallazgo de OWASP ZAP)', async () => {
+    const res = await asAdmin(request(ctx.app).get('/api/users/4656420115663864681'));
+    expect(res.status).toBe(400);
+  });
+
   test('id no numérico → 400', async () => {
     const res = await asAdmin(request(ctx.app).get('/api/users/abc'));
     expect(res.status).toBe(400);

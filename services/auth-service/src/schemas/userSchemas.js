@@ -40,11 +40,13 @@ const loginSchema = z
   })
   .strict();
 
-const idParamSchema = z.object({ id: z.coerce.number().int().positive() });
+// Límite del tipo INTEGER de PostgreSQL: un id mayor provocaba un error 500 (hallazgo de OWASP ZAP).
+const MAX_PG_INTEGER = 2_147_483_647;
+const idParamSchema = z.object({ id: z.coerce.number().int().positive().max(MAX_PG_INTEGER) });
 
 const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  offset: z.coerce.number().int().min(0).default(0),
+  offset: z.coerce.number().int().min(0).max(MAX_PG_INTEGER).default(0),
 });
 
 const roleSchema = z.object({ rol: z.enum(['admin', 'usuario']) }).strict();

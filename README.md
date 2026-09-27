@@ -40,6 +40,10 @@ La especificación OpenAPI está en `/api-docs/openapi.json`.
 - **Validación con listas blancas** (zod) en todas las entradas: bloquea payloads de XSS e inyección.
 - **Consultas SQL parametrizadas** en todo el repositorio de datos.
 - Mensaje genérico y tiempo constante en login para no revelar qué correos existen.
+- **Cabeceras de seguridad** con helmet (CSP, HSTS, `nosniff`, sin `X-Powered-By`) y `Cache-Control: no-store`.
+- **Límite de intentos** en login y registro (10 cada 15 min por IP) contra fuerza bruta.
+- **CORS** restringido a los orígenes configurados en `CORS_ORIGIN`.
+- `JWT_SECRET` obligatorio (mínimo 32 caracteres): no hay secretos en el código.
 
 ## Ejecutar localmente
 

@@ -9,7 +9,8 @@ const TEST_CONFIG = Object.freeze({
   jwtSecret: 'secreto-de-pruebas-con-al-menos-32-caracteres',
   jwtExpiresIn: '1h',
   bcryptRounds: 4,
-  corsOrigin: 'http://localhost:5173',
+  corsOrigin: ['http://localhost:5173'],
+  loginRateLimit: 1000,
 });
 
 const ADMIN = Object.freeze({ email: 'admin@alimenta.mx', password: 'Admin2026x' });
